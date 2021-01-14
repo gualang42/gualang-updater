@@ -1,0 +1,5 @@
+var version = {
+    'win': 1.63,
+    'osx': 1.63,
+    'linux': 1.63,
+}

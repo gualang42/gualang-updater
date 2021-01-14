@@ -1,0 +1,138 @@
+const paths = {
+    versionRemote: 'version-remote',
+    versionLocal: 'version-local',
+    updater: 'updater.gua',
+    repo: 'https://gitee.com/kuaibiancheng/gualang',
+
+    // 三个平台的 gualang 目录
+    win: 'C:\\gualang_ide\\portable-data\\data\\user-data\\gualang\\',
+    linux: '',
+    osx: '/Applications/gualang/code-portable-data/user-data/gualang/',
+}
+
+const rm = function(path, platform) {
+    if (platform == 'osx') {
+        var cmd = 'rm -rf {}'.format(path)
+        os.system(cmd)
+    } else if (platform == 'win') {
+        var cmd = 'rmdir /s/q {}'.format(path)
+        os.system(cmd)
+    }
+}
+
+const cp = function(pathFrom, pathTo, platform) {
+    if (platform == 'osx') {
+        var cmd = 'cp -R {} {}'.format(pathFrom, pathTo)
+        os.system(cmd)
+    } else if (platform == 'win') {
+        var cmd = 'XCOPY {}\\*.* /s/q {}'.format(pathFrom, pathTo)
+        os.system(cmd)
+    }
+}
+
+
+// version 文件格式
+`
+var version = {
+    'win': 1.63,
+    'osx': 1.23,
+    'linux': 1.34,
+}
+`
+
+const versionRemote = function(platform) {
+    var cmd = 'curl {}/raw/master/version -s -o {}.gua'.format(
+        paths:repo,
+        paths:versionRemote,
+    )
+    os.system(cmd)
+    var version = import(paths:versionRemote).version
+    var v = version[platform]
+    return v
+}
+
+const versionLocal = function(platform) {
+    var version = import(paths:versionLocal).version
+    var v = version[platform]
+    return v
+}
+
+const formattedVersion = function(version) {
+    // version: float
+    var v = '{}'.format(version)
+    var v1 = v[0]
+    var v2 = v[2]
+    var v3 = v[3]
+    var s = '{}.{}.{}'.format(v1, v2, v3)
+    return s
+}
+
+const needUpdate = function(platform) {
+    var r = versionRemote(platform)
+    var l = versionLocal(platform)
+    return r > l
+}
+
+const downloadAndOverwrite = function(repo, platform) {
+    // 更新 version-local.gua
+    var cmd = 'curl {}/raw/master/version -o {}.gua'.format(
+        repo,
+        paths:versionLocal,
+    )
+    os.system(cmd)
+
+    var tmpRepoName = 'tmp_repo'
+
+    // clone 整个仓库
+    const c1 = 'git clone --depth=1 {} {}'.format(repo, tmpRepoName)
+    log(c1)
+    os.system(c1)
+
+    // 删掉原来的 gualang
+    var gualangPath = paths[platform]
+    rm(gualangPath, platform)
+
+    // 拷贝对应平台的 gualang
+    var fromPath = '{}/gualang_{}'.format(tmpRepoName, platform)
+    if (platform == 'win') {
+        fromPath = '{}\\gualang_{}'.format(tmpRepoName, platform)
+    }
+    cp(fromPath, gualangPath, platform)
+
+    // cp py for mac
+    if (platform == 'osx') {
+        var pyFrom = 'Py.framework/'
+        var pyTo = '{}Py.framework/'.format(paths:osx)
+        cp(pyFrom, pyTo, platform)
+    }
+
+    rm(tmpRepoName, platform)
+}
+
+const update = function(platform) {
+    var repo = paths:repo
+    downloadAndOverwrite(repo, platform)
+}
+
+const __main = function() {
+    var option = os.args[1]
+    var platform = os.args[2]
+
+    if (option == 'check') {
+        var title = 'updated'
+        if (needUpdate(platform)) {
+            title = 'outdated'
+        }
+        var local = formattedVersion(versionLocal(platform))
+        var remote = formattedVersion(versionRemote(platform))
+        var s = 'gua:{} {} {}'.format(title, local, remote)
+        log(s)
+    } else if (option == 'update') {
+        update(platform)
+        var local = formattedVersion(versionLocal(platform))
+        log('gua:update {}'.format(local))
+    }
+}
+
+
+__main()

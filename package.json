@@ -1,0 +1,60 @@
+{
+	"name": "gualang-updater",
+	"publisher": "gualang",
+	"displayName": "Gualang Updater",
+	"description": "keep your gualang updated",
+	"engines": {
+		"vscode": "^1.28.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gualang42/gualang-updater"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.helloWorld",
+		"*"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.gualangUpdate",
+				"title": "Gualang:Update"
+			},
+			{
+				"command": "extension.gualangOpenDoc",
+				"title": "Gualang:Open Doc"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "extension.gualangUpdate",
+				"key": "ctrl+shift+u",
+				"mac": "ctrl+shift+u"
+			},
+			{
+				"command": "extension.gualangOpenDoc",
+				"key": "ctrl+shift+o",
+				"mac": "ctrl+shift+o"
+			}
+		]
+	},
+	"scripts": {
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.28.0",
+		"eslint": "^6.6.0",
+		"glob": "^7.1.5",
+		"mocha": "^6.2.2",
+		"typescript": "^3.6.4",
+		"vscode-test": "^1.2.2"
+	},
+	"version": "1.0.5"
+}
