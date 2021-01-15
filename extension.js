@@ -10,6 +10,8 @@ function platform() {
         return 'osx'
     } else if (p == 'win32') {
         return 'win'
+    } else {
+        return 'linux'
     }
 }
 
@@ -19,6 +21,8 @@ function gualang() {
         return './gualang.mac'
     } else if (p == 'win') {
         return 'gualang.exe'
+    } else {
+        return './gualang'
     }
 }
 
@@ -70,6 +74,8 @@ async function openDoc() {
         path = '/Applications/gualang/code-portable-data/user-data/gualang/doc'
     } else if (p == 'win') {
         path = 'C:\\gualang_ide\\portable-data\\data\\user-data\\gualang\\doc'
+    } else {
+        path = '/usr/local/gualang_ide/gualang/doc'
     }
     let uri = vscode.Uri.file(path);
     await vscode.commands.executeCommand('vscode.openFolder', uri, true);
