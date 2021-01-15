@@ -6,7 +6,7 @@ const paths = {
 
     // 三个平台的 gualang 目录
     win: 'C:\\gualang_ide\\portable-data\\data\\user-data\\gualang\\',
-    linux: '',
+    linux: '/usr/local/gualang_ide/gualang/',
     osx: '/Applications/gualang/code-portable-data/user-data/gualang/',
 }
 
@@ -17,6 +17,9 @@ const rm = function(path, platform) {
     } else if (platform == 'win') {
         var cmd = 'rmdir /s/q {}'.format(path)
         os.system(cmd)
+    } else {
+        var cmd = 'rm -rf {}'.format(path)
+        os.system(cmd)
     }
 }
 
@@ -26,6 +29,9 @@ const cp = function(pathFrom, pathTo, platform) {
         os.system(cmd)
     } else if (platform == 'win') {
         var cmd = 'XCOPY {}\\*.* /s/q {}'.format(pathFrom, pathTo)
+        os.system(cmd)
+    } else {
+        var cmd = 'cp -R {} {}'.format(pathFrom, pathTo)
         os.system(cmd)
     }
 }
